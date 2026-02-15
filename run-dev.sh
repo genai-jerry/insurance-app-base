@@ -18,10 +18,16 @@ fi
 # Load environment variables
 export $(cat .env | grep -v '^#' | xargs)
 
-# Check if Docker is running
+# Check if Docker is running, restart Colima if needed
 if ! docker info > /dev/null 2>&1; then
-    echo "❌ Docker is not running. Please start Docker and try again."
-    exit 1
+    echo "🔄 Docker is not responding. Restarting Colima..."
+    colima stop 2>/dev/null || true
+    colima start
+    if ! docker info > /dev/null 2>&1; then
+        echo "❌ Docker is still not running after restarting Colima. Please check your setup."
+        exit 1
+    fi
+    echo "✅ Colima started successfully!"
 fi
 
 echo "🧹 Cleaning up previous containers..."
