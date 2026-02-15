@@ -8,6 +8,8 @@ import { Layout } from './components/Layout';
 
 // Auth Pages
 import { Login } from './pages/auth/Login';
+import { ForgotPassword } from './pages/auth/ForgotPassword';
+import { ResetPassword } from './pages/auth/ResetPassword';
 
 // Agent Pages
 import { Dashboard } from './pages/agent/Dashboard';
@@ -68,6 +70,8 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* Agent Routes */}
             <Route

@@ -27,6 +27,15 @@ export interface RegisterRequest {
   role: 'AGENT' | 'ADMIN';
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
 // Lead Types
 export interface Lead {
   id: number;

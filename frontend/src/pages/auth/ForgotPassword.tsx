@@ -10,37 +10,35 @@ import {
   Link as MuiLink,
 } from '@mui/material';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAuthStore } from '../../store/authStore';
-import { LoginRequest } from '../../types';
+import { authApi } from '../../api/auth';
+import { ForgotPasswordRequest } from '../../types';
 
-export const Login = () => {
-  const navigate = useNavigate();
-  const { login } = useAuthStore();
+export const ForgotPassword = () => {
   const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginRequest>();
+  } = useForm<ForgotPasswordRequest>();
 
-  const onSubmit = async (data: LoginRequest) => {
+  const onSubmit = async (data: ForgotPasswordRequest) => {
     try {
       setLoading(true);
       setError('');
-      await login(data.email, data.password);
-      const user = useAuthStore.getState().user;
-      if (user?.role === 'ADMIN') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/agent/dashboard');
-      }
+      setSuccess('');
+      await authApi.forgotPassword(data);
+      setSuccess(
+        'If an account exists with that email, you will receive a password reset link shortly.'
+      );
     } catch (err: any) {
       setError(
-        err.response?.data?.message || 'Login failed. Please try again.'
+        err.response?.data?.message ||
+          'Failed to send reset email. Please try again.'
       );
     } finally {
       setLoading(false);
@@ -60,7 +58,7 @@ export const Login = () => {
         <Card sx={{ width: '100%', maxWidth: 500 }}>
           <CardContent sx={{ p: 4 }}>
             <Typography variant="h4" align="center" gutterBottom>
-              Insurance CRM
+              Forgot Password
             </Typography>
             <Typography
               variant="body2"
@@ -68,12 +66,19 @@ export const Login = () => {
               color="text.secondary"
               sx={{ mb: 4 }}
             >
-              Sign in to your account
+              Enter your email address and we'll send you a link to reset your
+              password
             </Typography>
 
             {error && (
               <Alert severity="error" sx={{ mb: 2 }}>
                 {error}
+              </Alert>
+            )}
+
+            {success && (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                {success}
               </Alert>
             )}
 
@@ -84,23 +89,14 @@ export const Login = () => {
                 margin="normal"
                 {...register('email', {
                   required: 'Email is required',
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: 'Invalid email address',
+                  },
                 })}
                 error={!!errors.email}
                 helperText={errors.email?.message}
-                disabled={loading}
-              />
-
-              <TextField
-                fullWidth
-                label="Password"
-                type="password"
-                margin="normal"
-                {...register('password', {
-                  required: 'Password is required',
-                })}
-                error={!!errors.password}
-                helperText={errors.password?.message}
-                disabled={loading}
+                disabled={loading || !!success}
               />
 
               <Button
@@ -108,15 +104,15 @@ export const Login = () => {
                 fullWidth
                 variant="contained"
                 size="large"
-                sx={{ mt: 3 }}
-                disabled={loading}
+                sx={{ mt: 3, mb: 2 }}
+                disabled={loading || !!success}
               >
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? 'Sending...' : 'Send Reset Link'}
               </Button>
 
               <Box sx={{ textAlign: 'center', mt: 2 }}>
-                <MuiLink component={Link} to="/forgot-password" variant="body2">
-                  Forgot Password?
+                <MuiLink component={Link} to="/login" variant="body2">
+                  Back to Login
                 </MuiLink>
               </Box>
             </form>

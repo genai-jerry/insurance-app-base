@@ -1,8 +1,10 @@
 package com.insurance.auth.controller;
 
+import com.insurance.auth.dto.ForgotPasswordRequest;
 import com.insurance.auth.dto.LoginRequest;
 import com.insurance.auth.dto.LoginResponse;
 import com.insurance.auth.dto.RegisterRequest;
+import com.insurance.auth.dto.ResetPasswordRequest;
 import com.insurance.auth.service.AuthService;
 import com.insurance.common.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,5 +41,19 @@ public class AuthController {
     public ResponseEntity<User> getCurrentUser() {
         User user = authService.getCurrentUser();
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Request password reset")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(summary = "Reset password with token")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok().build();
     }
 }

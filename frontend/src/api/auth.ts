@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { LoginRequest, LoginResponse, RegisterRequest, User } from '../types';
+import { LoginRequest, LoginResponse, RegisterRequest, User, ForgotPasswordRequest, ResetPasswordRequest } from '../types';
 
 export const authApi = {
   login: async (data: LoginRequest): Promise<LoginResponse> => {
@@ -19,5 +19,13 @@ export const authApi = {
 
   logout: async (): Promise<void> => {
     await apiClient.post('/auth/logout');
+  },
+
+  forgotPassword: async (data: ForgotPasswordRequest): Promise<void> => {
+    await apiClient.post('/auth/forgot-password', data);
+  },
+
+  resetPassword: async (data: ResetPasswordRequest): Promise<void> => {
+    await apiClient.post('/auth/reset-password', data);
   },
 };
