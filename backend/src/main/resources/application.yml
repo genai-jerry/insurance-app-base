@@ -1,0 +1,144 @@
+spring:
+  application:
+    name: insurance-app-backend
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/insurance_db}
+    username: ${SPRING_DATASOURCE_USERNAME:insurance_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:change_this_password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  mail:
+    host: ${SMTP_HOST:smtp.gmail.com}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: ${OPENAI_TEXT_MODEL:gpt-4o}
+          temperature: 0.7
+      embedding:
+        options:
+          model: ${OPENAI_EMBEDDING_MODEL:text-embedding-3-small}
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# Application configuration
+app:
+  jwt:
+    secret: ${JWT_SECRET:your-jwt-secret-key-min-256-bits-change-this-in-production}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+  openai:
+    realtime-model: ${OPENAI_REALTIME_MODEL:gpt-4o-realtime-preview-2024-12-17}
+
+  twilio:
+    account-sid: ${TWILIO_ACCOUNT_SID:}
+    auth-token: ${TWILIO_AUTH_TOKEN:}
+    phone-number: ${TWILIO_PHONE_NUMBER:}
+
+  storage:
+    type: ${STORAGE_TYPE:local}
+    local-path: ${STORAGE_LOCAL_PATH:./storage}
+    s3:
+      bucket: ${S3_BUCKET:}
+      region: ${S3_REGION:}
+      access-key: ${S3_ACCESS_KEY:}
+      secret-key: ${S3_SECRET_KEY:}
+
+  email:
+    from: ${SMTP_FROM:noreply@insurance-app.com}
+
+  voice:
+    mock-mode: ${VOICE_MOCK_MODE:true}
+
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:3000}
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,mappings
+  endpoint:
+    health:
+      show-details: when-authorized
+  health:
+    mail:
+      enabled: false
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    com.insurance: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet: TRACE
+    org.springframework.web.servlet.mvc.method.annotation: TRACE
+    org.springframework.web.servlet.handler: TRACE
+    org.springframework.boot.autoconfigure: DEBUG
+    org.springframework.context.annotation: DEBUG
+    org.springframework.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/insurance-app.log
+
+# Springdoc OpenAPI
+springdoc:
+  api-docs:
+    enabled: false
+    path: /api-docs
+  swagger-ui:
+    enabled: false
+    path: /swagger-ui.html
+    operations-sorter: method

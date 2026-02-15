@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: insurance-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-insurance_db}
+      POSTGRES_USER: ${DB_USER:-insurance_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_this_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/main/resources/db/init:/docker-entrypoint-initdb.d
+    networks:
+      - insurance-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-insurance_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: insurance-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-insurance_db}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-insurance_user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-change_this_password}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_REALTIME_MODEL: ${OPENAI_REALTIME_MODEL:-gpt-4o-realtime-preview-2024-12-17}
+      OPENAI_TEXT_MODEL: ${OPENAI_TEXT_MODEL:-gpt-4o}
+      OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+      STORAGE_TYPE: ${STORAGE_TYPE:-local}
+      STORAGE_LOCAL_PATH: ${STORAGE_LOCAL_PATH:-/app/storage}
+      VOICE_MOCK_MODE: ${VOICE_MOCK_MODE:-true}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - backend_storage:/app/storage
+    networks:
+      - insurance-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${BACKEND_URL:-http://localhost:8080}
+    container_name: insurance-frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - backend
+    networks:
+      - insurance-network
+
+volumes:
+  postgres_data:
+  backend_storage:
+
+networks:
+  insurance-network:
+    driver: bridge
