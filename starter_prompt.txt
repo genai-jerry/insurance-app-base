@@ -1,0 +1,27 @@
+I would like to build an app to help insurance agents reach out to their potential custoemers and help their customers finalise a plan that is suitable for them. The insurance agents need help in the following aspects
+1.  Managing the leads that have been assigned to them
+2. Managing the various products that are available to them along with their details
+3. Managing calendar to dial prospects based on the times specified by them
+4. Having a voice conversation and understanding the current needs of a prospect
+5. Proposing a product that is right for the needs of a prospect
+6. Getting contact details like Email and sending a detailed personalised prospectus for the customer
+
+Addition Requirements
+1. Allow the agent to add all relevant product information
+2. Allow various product categories to be created and show the documents category wise
+3. Add support for model selection and API keys in an admin UI. 
+
+Technical Inputs
+1. The voice call should be initiated by a bot (the sales agent) and it should ask questions that will try and identify the needs of the customer. 
+2. Based on what the user responds, the bot should look up relevant products from its vector store and suggest
+3. Based on user's inputs build a prospectus 
+4. The Bot should be empathetic and not pushy
+5. For voice bot, make use of Realtime API from OpenAI. 
+6. For text based LLM, make use of OpenAI APIs
+7. Make the DB configurations configurable
+8. Build the application using Spring Boot and use Spring AI
+9. Make this follow docker convention
+10. Support Github Actions to enable continuous deployment
+
+Build a detailed prompt for building the above application using Claude Code. 
+Make sure all requirements related to the front end, backend and DB are captured. 
