@@ -27,6 +27,13 @@ export interface RegisterRequest {
   role: 'AGENT' | 'ADMIN';
 }
 
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+  password: string;
+  role: 'AGENT' | 'ADMIN';
+}
+
 export interface ForgotPasswordRequest {
   email: string;
 }
