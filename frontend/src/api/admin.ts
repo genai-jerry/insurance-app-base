@@ -6,6 +6,7 @@ import {
   AuditLog,
   PageResponse,
   DashboardStats,
+  CreateUserRequest,
 } from '../types';
 
 export const adminApi = {
@@ -22,6 +23,11 @@ export const adminApi = {
 
   getUserById: async (id: number): Promise<User> => {
     const response = await apiClient.get<User>(`/admin/users/${id}`);
+    return response.data;
+  },
+
+  createUser: async (data: CreateUserRequest): Promise<User> => {
+    const response = await apiClient.post<User>('/admin/users', data);
     return response.data;
   },
 

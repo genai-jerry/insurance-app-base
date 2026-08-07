@@ -19,12 +19,12 @@ import {
   TextField,
   MenuItem,
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import { Edit, Delete, PersonAdd } from '@mui/icons-material';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { adminApi } from '../../api/admin';
-import { User } from '../../types';
+import { User, CreateUserRequest } from '../../types';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { formatDate } from '../../utils/formatters';
@@ -34,6 +34,7 @@ export const UserManagement = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const {
@@ -43,9 +44,25 @@ export const UserManagement = () => {
     formState: { errors },
   } = useForm<Partial<User>>();
 
+  const {
+    register: registerCreate,
+    handleSubmit: handleSubmitCreate,
+    reset: resetCreate,
+    formState: { errors: createErrors },
+  } = useForm<CreateUserRequest>();
+
   const { data, isLoading, error } = useQuery({
     queryKey: ['users', page, rowsPerPage],
     queryFn: () => adminApi.getAllUsers({ page, size: rowsPerPage }),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (data: CreateUserRequest) => adminApi.createUser(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setCreateDialogOpen(false);
+      resetCreate();
+    },
   });
 
   const updateMutation = useMutation({
@@ -83,6 +100,15 @@ export const UserManagement = () => {
     }
   };
 
+  const onCreateSubmit = (data: CreateUserRequest) => {
+    createMutation.mutate(data);
+  };
+
+  const handleOpenCreate = () => {
+    resetCreate({ name: '', email: '', password: '', role: 'AGENT' });
+    setCreateDialogOpen(true);
+  };
+
   if (isLoading) {
     return <LoadingSpinner message="Loading users..." />;
   }
@@ -93,9 +119,18 @@ export const UserManagement = () => {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        User Management
-      </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h4">
+          User Management
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<PersonAdd />}
+          onClick={handleOpenCreate}
+        >
+          Add User
+        </Button>
+      </Box>
 
       <TableContainer component={Paper}>
         <Table>
@@ -152,6 +187,82 @@ export const UserManagement = () => {
           }}
         />
       </TableContainer>
+
+      {/* Create Dialog */}
+      <Dialog
+        open={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <form onSubmit={handleSubmitCreate(onCreateSubmit)}>
+          <DialogTitle>Add New User</DialogTitle>
+          <DialogContent>
+            {createMutation.error && (
+              <ErrorAlert error={createMutation.error as Error} />
+            )}
+            <TextField
+              fullWidth
+              label="Name"
+              margin="normal"
+              {...registerCreate('name', { required: 'Name is required' })}
+              error={!!createErrors.name}
+              helperText={createErrors.name?.message}
+            />
+            <TextField
+              fullWidth
+              label="Email"
+              type="email"
+              margin="normal"
+              {...registerCreate('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Invalid email',
+                },
+              })}
+              error={!!createErrors.email}
+              helperText={createErrors.email?.message}
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              type="password"
+              margin="normal"
+              {...registerCreate('password', {
+                required: 'Password is required',
+                minLength: {
+                  value: 6,
+                  message: 'Password must be at least 6 characters',
+                },
+              })}
+              error={!!createErrors.password}
+              helperText={createErrors.password?.message}
+            />
+            <TextField
+              fullWidth
+              select
+              label="Role"
+              margin="normal"
+              defaultValue="AGENT"
+              {...registerCreate('role', { required: 'Role is required' })}
+            >
+              <MenuItem value="AGENT">Agent</MenuItem>
+              <MenuItem value="ADMIN">Admin</MenuItem>
+            </TextField>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={createMutation.isPending}
+            >
+              Create
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog
