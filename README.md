@@ -543,6 +543,15 @@ Once running, access interactive API documentation:
 
 ## 🤝 Contributing
 
+**Requesting a feature or fix:** open an issue using the **Factory requirement**
+template (`New issue` → "Factory requirement"). Describe the problem and
+desired outcome, not the solution — this repo runs the
+[Claude Software Factory](https://github.com/genai-jerry/claude-software-factory)
+pipeline, which turns the issue into a spec, plan, implementation, and PR
+through a series of approval gates.
+
+**Contributing code directly:**
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
@@ -596,7 +605,7 @@ docker-compose restart postgres
 
 ### Getting Help
 
-- GitHub Issues: Report bugs and request features
+- GitHub Issues: Report bugs, or request features via the "Factory requirement" issue template
 - Documentation: Check `/docs` folder for detailed guides
 - Logs: Always check application logs first
 
