@@ -18,16 +18,17 @@ between task 1 and task 3.
 ## Order and dependencies
 
 ```
-T1 (backend: filter + contract)
- ├── T2 (backend tests)            ← parallel with T3 once T1 is merged
- └── T3 (frontend: filter UI)
-      └── T4 (frontend test harness + component tests)
+T1 #20 (backend: filter + contract)
+ ├── T2 #21 (backend tests)        ← parallel with T3 once T1 is merged
+ └── T3 #22 (frontend: filter UI)
+      └── T4 #23 (frontend test harness + component tests)
 ```
 
 ---
 
 ## T1 — Backend: accept an optional email filter on the user listing
 
+- [ ] **Sub-issue:** [#20](https://github.com/genai-jerry/insurance-app-base/issues/20)
 - [ ] **Repo:** insurance-app-base (backend)
 - [ ] **Depends on:** nothing
 - [ ] **Serves scenarios:** Full email address matches one account · Partial term
@@ -62,8 +63,9 @@ filter field other than email.
 
 ## T2 — Backend: tests for the filter, its access control and its hostile inputs
 
+- [ ] **Sub-issue:** [#21](https://github.com/genai-jerry/insurance-app-base/issues/21)
 - [ ] **Repo:** insurance-app-base (backend)
-- [ ] **Depends on:** T1
+- [ ] **Depends on:** T1 (#20)
 - [ ] **Serves scenarios:** all T1 scenarios, plus An agent cannot read the user
       list by filtering it · An unauthenticated caller cannot read the user list
       by filtering it
@@ -87,8 +89,9 @@ appears, use the Docker build path and judge only this delta.
 
 ## T3 — Frontend: email filter control on `/admin/users`
 
+- [ ] **Sub-issue:** [#22](https://github.com/genai-jerry/insurance-app-base/issues/22)
 - [ ] **Repo:** insurance-app-base (frontend)
-- [ ] **Depends on:** T1
+- [ ] **Depends on:** T1 (#20)
 - [ ] **Serves scenarios:** Full email address matches one account · Partial term
       matches every account containing it · Matching ignores case · Surrounding
       whitespace is ignored · Clearing the filter restores the full list · A term
@@ -115,8 +118,9 @@ an already-fetched page would violate the "covers every account" scenario.
 
 ## T4 — Frontend: test harness and component tests for the filter
 
+- [ ] **Sub-issue:** [#23](https://github.com/genai-jerry/insurance-app-base/issues/23)
 - [ ] **Repo:** insurance-app-base (frontend)
-- [ ] **Depends on:** T3
+- [ ] **Depends on:** T3 (#22)
 - [ ] **Serves scenarios:** Clearing the filter restores the full list · A term
       matching nothing yields an explicit empty result · Surrounding whitespace
       is ignored · The filter covers every account, not just the displayed rows
