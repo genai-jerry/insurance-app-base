@@ -236,9 +236,12 @@ Agent: agent@insurance.com / Agent@123
 ```
 
 ### CI/CD Workflows
-- **ci.yml**: Build/test on PRs (backend tests, frontend build, Docker build)
-- **cd.yml**: Push images to GHCR on main branch
-- **deploy.yml**: SSH deploy to VM with docker-compose
+This repo consumes the [Claude Software Factory](https://github.com/genai-jerry/claude-software-factory) — an agentic pipeline (intake → plan → design → implement → review → QA → release) that turns a filed requirement into a shipped, reviewed PR.
+- **factory-pipeline.yml**: caller stub that runs the factory roles (intake, planner, architect, dispatch, implementer, reviewer, qa, release, ops) against an issue as it moves through `factory:*` labels
+- **factory-branch-guard.yml**: flags commits pushed directly to `main`/`master` without a PR
+- **factory-test.yml**: pilot-only harness for exercising factory roles from Actions; not part of the normal flow
+
+**Requesting work:** open an issue with the **Factory requirement** template (`.github/ISSUE_TEMPLATE/factory-requirement.yml`) — describe the problem/outcome, not the solution. This applies the `factory:intake` label and kicks off `factory-pipeline.yml`. See `FACTORY.md` in the claude-software-factory repo for the full pipeline and gate details.
 
 ### Common Development Tasks
 
