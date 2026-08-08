@@ -115,18 +115,23 @@ management:
         enabled: true
 
 # Logging
+# NOTE: the org.springframework.web* levels must stay at INFO by default.
+# DispatcherServlet.logRequest emits the request line — including the query string —
+# at DEBUG, which would write user-supplied PII (e.g. ?email= on /api/admin/users,
+# ?search= on /api/leads) into the application log. Raise them per-environment via
+# WEB_LOG_LEVEL when debugging, never in the committed defaults.
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
-    com.insurance: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
-    org.springframework.web.servlet: TRACE
-    org.springframework.web.servlet.mvc.method.annotation: TRACE
-    org.springframework.web.servlet.handler: TRACE
-    org.springframework.boot.autoconfigure: DEBUG
-    org.springframework.context.annotation: DEBUG
-    org.springframework.hibernate.SQL: DEBUG
+    com.insurance: ${APP_LOG_LEVEL:DEBUG}
+    org.springframework.security: ${SECURITY_LOG_LEVEL:INFO}
+    org.springframework.web: ${WEB_LOG_LEVEL:INFO}
+    org.springframework.web.servlet: ${WEB_LOG_LEVEL:INFO}
+    org.springframework.web.servlet.mvc.method.annotation: ${WEB_LOG_LEVEL:INFO}
+    org.springframework.web.servlet.handler: ${WEB_LOG_LEVEL:INFO}
+    org.springframework.boot.autoconfigure: ${BOOT_LOG_LEVEL:INFO}
+    org.springframework.context.annotation: ${BOOT_LOG_LEVEL:INFO}
+    org.springframework.hibernate.SQL: ${SQL_LOG_LEVEL:DEBUG}
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

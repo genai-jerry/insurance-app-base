@@ -5,6 +5,7 @@ import com.insurance.auth.repository.UserRepository;
 import com.insurance.common.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +22,32 @@ public class UserManagementService {
     private final PasswordEncoder passwordEncoder;
     private final AuditLogService auditLogService;
 
+    /** users.email is VARCHAR(255); no stored email can contain a longer substring. */
+    private static final int MAX_EMAIL_FILTER_LENGTH = 255;
+
+    /**
+     * Lists users, optionally filtered by a case-insensitive substring of the email
+     * address. A term that is null, empty or whitespace-only means "no filter".
+     *
+     * <p>The term is deliberately never logged or audited: it is user-supplied PII.
+     */
     @Transactional(readOnly = true)
-    public List<UserDto> getAllUsers() {
-        return userRepository.findAll().stream()
+    public List<UserDto> getAllUsers(String emailFilter) {
+        String term = emailFilter == null ? null : emailFilter.trim();
+
+        List<User> users;
+        if (term == null || term.isEmpty()) {
+            users = userRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+        } else if (term.length() > MAX_EMAIL_FILTER_LENGTH) {
+            // No email in a VARCHAR(255) column can contain a longer substring, so an
+            // empty result is the same answer the query would give — this just avoids
+            // the round trip and keeps oversized terms failure-free.
+            users = List.of();
+        } else {
+            users = userRepository.findByEmailContainingIgnoreCaseOrderByIdAsc(term);
+        }
+
+        return users.stream()
             .map(this::mapToDto)
             .collect(Collectors.toList());
     }
