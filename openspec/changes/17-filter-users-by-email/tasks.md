@@ -63,10 +63,10 @@ filter field other than email.
 
 ## T2 — Backend: tests for the filter, its access control and its hostile inputs
 
-- [ ] **Sub-issue:** [#21](https://github.com/genai-jerry/insurance-app-base/issues/21)
-- [ ] **Repo:** insurance-app-base (backend)
-- [ ] **Depends on:** T1 (#20)
-- [ ] **Serves scenarios:** all T1 scenarios, plus An agent cannot read the user
+- [x] **Sub-issue:** [#21](https://github.com/genai-jerry/insurance-app-base/issues/21)
+- [x] **Repo:** insurance-app-base (backend)
+- [x] **Depends on:** T1 (#20)
+- [x] **Serves scenarios:** all T1 scenarios, plus An agent cannot read the user
       list by filtering it · An unauthenticated caller cannot read the user list
       by filtering it
 
