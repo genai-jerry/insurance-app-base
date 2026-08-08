@@ -549,6 +549,22 @@ Once running, access interactive API documentation:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## 👤 About This Project
+
+Built by [Jerry Kurian](https://www.linkedin.com/in/jerryk/)
+([@genai-jerry](https://github.com/genai-jerry)) at
+[GenAI People](https://genaipeople.com).
+
+The app above is one half of what this repository is for. The other half is a
+question about process: how much of a full-stack build can be handed to AI agents
+without giving up review, traceability or control of `main`. So the repo is itself
+managed by the [Software Factory](https://github.com/genai-jerry/claude-software-factory)
+— GitHub issues carry pipeline state, OpenSpec carries the specs, and every change
+clears three human approval gates before it can merge.
+
+If that is the part you came for, `.factory/profile.json` and `openspec/` are
+where the machinery is visible on a real codebase rather than a toy one.
+
 ## 📝 License
 
 This project is licensed under the MIT License.
