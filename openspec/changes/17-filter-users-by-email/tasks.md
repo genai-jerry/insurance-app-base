@@ -118,10 +118,10 @@ an already-fetched page would violate the "covers every account" scenario.
 
 ## T4 — Frontend: test harness and component tests for the filter
 
-- [ ] **Sub-issue:** [#23](https://github.com/genai-jerry/insurance-app-base/issues/23)
-- [ ] **Repo:** insurance-app-base (frontend)
-- [ ] **Depends on:** T3 (#22)
-- [ ] **Serves scenarios:** Clearing the filter restores the full list · A term
+- [x] **Sub-issue:** [#23](https://github.com/genai-jerry/insurance-app-base/issues/23)
+- [x] **Repo:** insurance-app-base (frontend)
+- [x] **Depends on:** T3 (#22)
+- [x] **Serves scenarios:** Clearing the filter restores the full list · A term
       matching nothing yields an explicit empty result · Surrounding whitespace
       is ignored · The filter covers every account, not just the displayed rows
       (asserted as: the component asks the server, rather than filtering locally)
