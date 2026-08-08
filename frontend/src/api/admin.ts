@@ -13,6 +13,7 @@ export const adminApi = {
   getAllUsers: async (params?: {
     page?: number;
     size?: number;
+    email?: string;
   }): Promise<User[]> => {
     const response = await apiClient.get<User[]>('/admin/users', {
       params,

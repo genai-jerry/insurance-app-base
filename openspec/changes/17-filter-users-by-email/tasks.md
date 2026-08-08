@@ -89,9 +89,9 @@ appears, use the Docker build path and judge only this delta.
 
 ## T3 — Frontend: email filter control on `/admin/users`
 
-- [ ] **Sub-issue:** [#22](https://github.com/genai-jerry/insurance-app-base/issues/22)
-- [ ] **Repo:** insurance-app-base (frontend)
-- [ ] **Depends on:** T1 (#20)
+- [x] **Sub-issue:** [#22](https://github.com/genai-jerry/insurance-app-base/issues/22)
+- [x] **Repo:** insurance-app-base (frontend)
+- [x] **Depends on:** T1 (#20)
 - [ ] **Serves scenarios:** Full email address matches one account · Partial term
       matches every account containing it · Matching ignores case · Surrounding
       whitespace is ignored · Clearing the filter restores the full list · A term

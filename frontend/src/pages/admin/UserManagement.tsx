@@ -33,8 +33,14 @@ export const UserManagement = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [emailFilter, setEmailFilter] = useState('');
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  // Trimmed before it enters the query key so "a " and "a" share one cache
+  // entry and a whitespace-only term issues no filtered request. The server
+  // trims again — it does not trust this.
+  const appliedFilter = emailFilter.trim();
 
   const {
     register,
@@ -44,8 +50,14 @@ export const UserManagement = () => {
   } = useForm<Partial<User>>();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['users', page, rowsPerPage],
-    queryFn: () => adminApi.getAllUsers({ page, size: rowsPerPage }),
+    queryKey: ['users', page, rowsPerPage, appliedFilter],
+    queryFn: () =>
+      adminApi.getAllUsers({
+        page,
+        size: rowsPerPage,
+        email: appliedFilter || undefined,
+      }),
+    placeholderData: (previousData) => previousData,
   });
 
   const updateMutation = useMutation({
@@ -83,75 +95,98 @@ export const UserManagement = () => {
     }
   };
 
-  if (isLoading) {
-    return <LoadingSpinner message="Loading users..." />;
-  }
-
-  if (error) {
-    return <ErrorAlert error={error as Error} />;
-  }
-
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
         User Management
       </Typography>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Created</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data?.map((user) => (
-              <TableRow key={user.id} hover>
-                <TableCell>{user.id}</TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={user.role}
-                    size="small"
-                    color={user.role === 'ADMIN' ? 'secondary' : 'primary'}
-                  />
-                </TableCell>
-                <TableCell>{user.createdAt ? formatDate(user.createdAt) : '-'}</TableCell>
-                <TableCell>
-                  <IconButton size="small" onClick={() => handleEdit(user)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    <Delete />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={data?.length || 0}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10));
+      {/* Rendered unconditionally: if the loading branch replaced the whole
+          page, this field would unmount on the first keystroke and lose focus. */}
+      <Paper sx={{ mb: 2, p: 2 }}>
+        <TextField
+          label="Filter by email"
+          variant="outlined"
+          size="small"
+          value={emailFilter}
+          onChange={(e) => {
+            setEmailFilter(e.target.value);
             setPage(0);
           }}
+          sx={{ minWidth: 300 }}
         />
-      </TableContainer>
+      </Paper>
+
+      {error ? (
+        <ErrorAlert error={error as Error} />
+      ) : isLoading ? (
+        <LoadingSpinner message="Loading users..." />
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Role</TableCell>
+                <TableCell>Created</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data?.map((user) => (
+                <TableRow key={user.id} hover>
+                  <TableCell>{user.id}</TableCell>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={user.role}
+                      size="small"
+                      color={user.role === 'ADMIN' ? 'secondary' : 'primary'}
+                    />
+                  </TableCell>
+                  <TableCell>{user.createdAt ? formatDate(user.createdAt) : '-'}</TableCell>
+                  <TableCell>
+                    <IconButton size="small" onClick={() => handleEdit(user)}>
+                      <Edit />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => handleDelete(user.id)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {data && data.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center">
+                    {appliedFilter
+                      ? 'No users match the entered email.'
+                      : 'No users found.'}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={data?.length || 0}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+          />
+        </TableContainer>
+      )}
 
       {/* Edit Dialog */}
       <Dialog
