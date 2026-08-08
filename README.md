@@ -551,7 +551,8 @@ Once running, access interactive API documentation:
 
 ## 👤 About This Project
 
-Built by [Jerry Kurian](https://github.com/genai-jerry) at
+Built by [Jerry Kurian](https://www.linkedin.com/in/jerryk/)
+([@genai-jerry](https://github.com/genai-jerry)) at
 [GenAI People](https://genaipeople.com).
 
 The app above is one half of what this repository is for. The other half is a
