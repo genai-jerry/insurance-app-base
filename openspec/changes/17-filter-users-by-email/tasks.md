@@ -28,9 +28,9 @@ T1 #20 (backend: filter + contract)
 
 ## T1 — Backend: accept an optional email filter on the user listing
 
-- [ ] **Sub-issue:** [#20](https://github.com/genai-jerry/insurance-app-base/issues/20)
-- [ ] **Repo:** insurance-app-base (backend)
-- [ ] **Depends on:** nothing
+- [x] **Sub-issue:** [#20](https://github.com/genai-jerry/insurance-app-base/issues/20)
+- [x] **Repo:** insurance-app-base (backend)
+- [x] **Depends on:** nothing
 - [ ] **Serves scenarios:** Full email address matches one account · Partial term
       matches every account containing it · Matching ignores case · Surrounding
       whitespace is ignored · Clearing the filter restores the full list · A term

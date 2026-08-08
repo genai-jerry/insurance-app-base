@@ -4,6 +4,7 @@ import com.insurance.admin.service.UserManagementService;
 import com.insurance.auth.dto.UserDto;
 import com.insurance.common.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -30,9 +31,18 @@ public class UserManagementController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get all users")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> users = userManagementService.getAllUsers();
+    @Operation(
+        summary = "Get all users",
+        description = "Optionally filtered by a case-insensitive substring of the email address."
+    )
+    public ResponseEntity<List<UserDto>> getAllUsers(
+        // Deliberately no @Size/@Validated here: no @ControllerAdvice covers
+        // com.insurance.admin, so a ConstraintViolationException would surface as a 500.
+        // The length guard lives in the service, where it cannot throw.
+        @Parameter(description = "Case-insensitive substring filter on email; blank means no filter")
+        @RequestParam(required = false) String email
+    ) {
+        List<UserDto> users = userManagementService.getAllUsers(email);
         return ResponseEntity.ok(users);
     }
 

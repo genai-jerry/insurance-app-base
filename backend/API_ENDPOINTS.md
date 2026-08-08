@@ -176,7 +176,7 @@ All endpoints require JWT authentication via `Authorization: Bearer <token>` hea
 ### User Management
 | Method | Endpoint | Access | Description |
 |--------|----------|--------|-------------|
-| GET | `/api/admin/users` | ADMIN | Get all users |
+| GET | `/api/admin/users` | ADMIN | Get all users; optional `?email=` case-insensitive substring filter |
 | GET | `/api/admin/users/{id}` | ADMIN | Get user by ID |
 | POST | `/api/admin/users` | ADMIN | Create user |
 | PUT | `/api/admin/users/{id}` | ADMIN | Update user |
