@@ -2,6 +2,12 @@ name: Factory pipeline
 
 # Caller stub. All logic lives in the factory repo; this file owns only the
 # triggers and the version pin. Bump both refs together when upgrading.
+#
+# CANARY PIN: both refs point at the factory's release-gating branch rather
+# than v1, because release gating (FACTORY.md §2d) is not on v1 yet and the
+# config in .github/factory-release.json does nothing without it. This repo is
+# the canary for that change. Once the factory PR is merged and v1 is
+# fast-forwarded, set both refs back to `v1`.
 
 on:
   issues:
@@ -35,9 +41,9 @@ permissions:
 
 jobs:
   factory:
-    uses: genai-jerry/claude-software-factory/.github/workflows/factory-pipeline.yml@v1
+    uses: genai-jerry/claude-software-factory/.github/workflows/factory-pipeline.yml@claude/milestone-gated-issues-ib3evl
     secrets: inherit
     with:
       role: ${{ inputs.role }}
       issue_number: ${{ inputs.issue_number }}
-      factory_ref: v1
+      factory_ref: claude/milestone-gated-issues-ib3evl
