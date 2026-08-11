@@ -119,7 +119,7 @@ export const ProductManagement = () => {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">Product Management</Typography>
+        <Typography variant="h4">Manage Products</Typography>
         <Button
           variant="contained"
           startIcon={<Add />}
