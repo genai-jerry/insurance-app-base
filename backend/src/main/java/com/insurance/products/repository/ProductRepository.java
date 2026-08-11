@@ -32,9 +32,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      */
     @Query("SELECT p FROM Product p WHERE " +
            "(:categoryId IS NULL OR p.category.id = :categoryId) AND " +
-           "(:insurer IS NULL OR LOWER(p.insurer) = LOWER(:insurer)) AND " +
-           "(:planType IS NULL OR LOWER(p.planType) = LOWER(:planType)) AND " +
-           "(:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+           "(:insurer IS NULL OR LOWER(p.insurer) = LOWER(CAST(:insurer AS string))) AND " +
+           "(:planType IS NULL OR LOWER(p.planType) = LOWER(CAST(:planType AS string))) AND " +
+           "(:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%'))) " +
            "ORDER BY p.id ASC")
     List<Product> findByFilters(@Param("categoryId") Long categoryId,
                                 @Param("insurer") String insurer,
