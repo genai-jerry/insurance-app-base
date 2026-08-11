@@ -90,10 +90,10 @@ list filter (issue #41), or any frontend change.
 
 ## T2 — Backend: tests for the name filter, its composition and its hostile inputs
 
-- [ ] **Sub-issue:** [#47](https://github.com/genai-jerry/insurance-app-base/issues/47)
-- [ ] **Repo:** insurance-app-base (backend)
-- [ ] **Depends on:** T1 (#46)
-- [ ] **Serves scenarios:** all T1 scenarios, verified — in particular the
+- [x] **Sub-issue:** [#47](https://github.com/genai-jerry/insurance-app-base/issues/47)
+- [x] **Repo:** insurance-app-base (backend)
+- [x] **Depends on:** T1 (#46)
+- [x] **Serves scenarios:** all T1 scenarios, verified — in particular the
       composition pair (Name and category narrow together · Existing callers
       are unaffected), the access-control trio (An unauthenticated caller
       cannot read the catalogue by filtering it · An authenticated agent may
