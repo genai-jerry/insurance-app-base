@@ -106,7 +106,7 @@ export const CategoryManagement = () => {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">Category Management</Typography>
+        <Typography variant="h4">Manage Categories</Typography>
         <Button
           variant="contained"
           startIcon={<Add />}
