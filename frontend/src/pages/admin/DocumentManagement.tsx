@@ -24,7 +24,7 @@ export const DocumentManagement = () => {
           Product Documents
         </Typography>
         <Typography color="text.secondary">
-          To manage documents, go to Product Management and select a product to
+          To manage documents, go to Manage Products and select a product to
           view and upload its documents via the product document API.
         </Typography>
       </Paper>
