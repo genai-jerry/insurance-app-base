@@ -33,12 +33,14 @@ public class ProductController {
             @Parameter(description = "Insurer name to filter by")
             @RequestParam(required = false) String insurer,
             @Parameter(description = "Plan type to filter by")
-            @RequestParam(required = false) String planType) {
+            @RequestParam(required = false) String planType,
+            @Parameter(description = "Case-insensitive substring filter on product name; blank means no filter")
+            @RequestParam(required = false) String name) {
 
         List<ProductDto> products;
 
-        if (categoryId != null || insurer != null || planType != null) {
-            products = productService.filterProducts(categoryId, insurer, planType);
+        if (categoryId != null || insurer != null || planType != null || name != null) {
+            products = productService.filterProducts(categoryId, insurer, planType, name);
         } else {
             products = productService.getAllProducts();
         }

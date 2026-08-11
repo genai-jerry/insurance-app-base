@@ -35,10 +35,10 @@ T1 #46 (backend: name filter + contract)
 
 ## T1 — Backend: accept an optional name filter on the product listing
 
-- [ ] **Sub-issue:** [#46](https://github.com/genai-jerry/insurance-app-base/issues/46)
-- [ ] **Repo:** insurance-app-base (backend)
-- [ ] **Depends on:** nothing
-- [ ] **Serves scenarios:** Full product name matches the product · Partial term
+- [x] **Sub-issue:** [#46](https://github.com/genai-jerry/insurance-app-base/issues/46)
+- [x] **Repo:** insurance-app-base (backend)
+- [x] **Depends on:** nothing
+- [x] **Serves scenarios:** Full product name matches the product · Partial term
       matches every product containing it · Matching ignores case · Surrounding
       whitespace is ignored · Several products may share a matching name
       (including the stable, repeatable order) · Clearing the filter restores

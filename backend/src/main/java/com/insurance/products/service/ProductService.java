@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductService {
 
+    /** products.name is VARCHAR(255); no stored name can contain a longer substring. */
+    private static final int MAX_NAME_FILTER_LENGTH = 255;
+
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
 
@@ -57,9 +60,28 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Lists products narrowed by every supplied filter. The name filter is a
+     * case-insensitive substring match on the product name only; a term that is null,
+     * empty or whitespace-only means "no name filter", and surrounding whitespace is
+     * trimmed before matching.
+     */
     @Transactional(readOnly = true)
-    public List<ProductDto> filterProducts(Long categoryId, String insurer, String planType) {
-        return productRepository.findByFilters(categoryId, insurer, planType)
+    public List<ProductDto> filterProducts(Long categoryId, String insurer, String planType, String name) {
+        String term = name == null ? null : name.trim();
+
+        if (term != null && term.isEmpty()) {
+            term = null;
+        }
+
+        if (term != null && term.length() > MAX_NAME_FILTER_LENGTH) {
+            // No name in a VARCHAR(255) column can contain a longer substring, so an
+            // empty result is the same answer the query would give — this just avoids
+            // the round trip and keeps oversized terms failure-free.
+            return List.of();
+        }
+
+        return productRepository.findByFilters(categoryId, insurer, planType, term)
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
