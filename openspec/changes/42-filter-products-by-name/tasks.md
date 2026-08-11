@@ -161,10 +161,10 @@ name.
 
 ## T4 — Frontend: component tests for the product-name filter
 
-- [ ] **Sub-issue:** [#49](https://github.com/genai-jerry/insurance-app-base/issues/49)
-- [ ] **Repo:** insurance-app-base (frontend)
-- [ ] **Depends on:** T3 (#48)
-- [ ] **Serves scenarios:** the T3 scenarios, verified at the component level —
+- [x] **Sub-issue:** [#49](https://github.com/genai-jerry/insurance-app-base/issues/49)
+- [x] **Repo:** insurance-app-base (frontend)
+- [x] **Depends on:** T3 (#48)
+- [x] **Serves scenarios:** the T3 scenarios, verified at the component level —
       filtering narrows the table, clearing restores it, the no-match message
       names the entered term's situation explicitly, and the term is passed to
       the listing call (whole-catalogue behaviour) rather than filtered locally
