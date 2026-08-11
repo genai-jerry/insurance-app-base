@@ -125,10 +125,10 @@ it appears, use the Docker build path and judge only this delta.
 
 ## T3 — Frontend: product-name filter control on `/admin/products`
 
-- [ ] **Sub-issue:** [#48](https://github.com/genai-jerry/insurance-app-base/issues/48)
-- [ ] **Repo:** insurance-app-base (frontend)
-- [ ] **Depends on:** T1 (#46)
-- [ ] **Serves scenarios:** Full product name matches the product · Partial term
+- [x] **Sub-issue:** [#48](https://github.com/genai-jerry/insurance-app-base/issues/48)
+- [x] **Repo:** insurance-app-base (frontend)
+- [x] **Depends on:** T1 (#46)
+- [x] **Serves scenarios:** Full product name matches the product · Partial term
       matches every product containing it · Matching ignores case · Surrounding
       whitespace is ignored · Several products may share a matching name ·
       Clearing the filter restores the full list · A term matching nothing
