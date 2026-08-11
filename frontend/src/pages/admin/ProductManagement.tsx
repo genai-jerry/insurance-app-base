@@ -31,6 +31,12 @@ export const ProductManagement = () => {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [nameFilter, setNameFilter] = useState('');
+
+  // Trimmed before it enters the query key so "a " and "a" share one cache
+  // entry and a whitespace-only term issues no filtered request. The server
+  // trims again — it does not trust this.
+  const appliedFilter = nameFilter.trim();
 
   const {
     register,
@@ -41,8 +47,9 @@ export const ProductManagement = () => {
   } = useForm<CreateProductRequest>();
 
   const { data: products, isLoading, error } = useQuery({
-    queryKey: ['products'],
-    queryFn: () => productsApi.getAll({}),
+    queryKey: ['products', appliedFilter],
+    queryFn: () => productsApi.getAll({ name: appliedFilter || undefined }),
+    placeholderData: (previousData) => previousData,
   });
 
   const { data: categories } = useQuery({
@@ -108,14 +115,6 @@ export const ProductManagement = () => {
     }
   };
 
-  if (isLoading) {
-    return <LoadingSpinner message="Loading products..." />;
-  }
-
-  if (error) {
-    return <ErrorAlert error={error as Error} />;
-  }
-
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
@@ -133,47 +132,75 @@ export const ProductManagement = () => {
         </Button>
       </Box>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Insurer</TableCell>
-              <TableCell>Plan Type</TableCell>
-              <TableCell>Tags</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {products?.map((product) => (
-              <TableRow key={product.id} hover>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.categoryName}</TableCell>
-                <TableCell>{product.insurer || '-'}</TableCell>
-                <TableCell>{product.planType || '-'}</TableCell>
-                <TableCell>
-                  {product.tags?.map((tag, idx) => (
-                    <Chip key={idx} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
-                  )) || '-'}
-                </TableCell>
-                <TableCell>
-                  <IconButton size="small" onClick={() => handleEdit(product)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => handleDelete(product.id)}
-                  >
-                    <Delete />
-                  </IconButton>
-                </TableCell>
+      {/* Rendered unconditionally: if the loading branch replaced the whole
+          page, this field would unmount on the first keystroke and lose focus. */}
+      <Paper sx={{ mb: 2, p: 2 }}>
+        <TextField
+          label="Filter by name"
+          variant="outlined"
+          size="small"
+          value={nameFilter}
+          onChange={(e) => setNameFilter(e.target.value)}
+          sx={{ minWidth: 300 }}
+        />
+      </Paper>
+
+      {error ? (
+        <ErrorAlert error={error as Error} />
+      ) : isLoading ? (
+        <LoadingSpinner message="Loading products..." />
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Category</TableCell>
+                <TableCell>Insurer</TableCell>
+                <TableCell>Plan Type</TableCell>
+                <TableCell>Tags</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {products?.map((product) => (
+                <TableRow key={product.id} hover>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{product.categoryName}</TableCell>
+                  <TableCell>{product.insurer || '-'}</TableCell>
+                  <TableCell>{product.planType || '-'}</TableCell>
+                  <TableCell>
+                    {product.tags?.map((tag, idx) => (
+                      <Chip key={idx} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
+                    )) || '-'}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton size="small" onClick={() => handleEdit(product)}>
+                      <Edit />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => handleDelete(product.id)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {products && products.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center">
+                    {appliedFilter
+                      ? 'No products match the entered name.'
+                      : 'No products found.'}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
       {/* Create/Edit Dialog */}
       <Dialog

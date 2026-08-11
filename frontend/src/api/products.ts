@@ -10,6 +10,7 @@ export const productsApi = {
   getAll: async (params?: {
     categoryId?: number;
     size?: number;
+    name?: string;
   }): Promise<Product[]> => {
     const response = await apiClient.get<Product[]>('/products', {
       params,
