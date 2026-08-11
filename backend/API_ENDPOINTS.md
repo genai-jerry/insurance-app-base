@@ -48,7 +48,7 @@ All endpoints require JWT authentication via `Authorization: Bearer <token>` hea
 | Method | Endpoint | Access | Description |
 |--------|----------|--------|-------------|
 | POST | `/api/products` | ADMIN | Create product |
-| GET | `/api/products` | ADMIN, AGENT | Get all products |
+| GET | `/api/products` | ADMIN, AGENT | Get all products; optional `categoryId`, `insurer`, `planType`, `name` (case-insensitive substring) filters |
 | GET | `/api/products/{id}` | ADMIN, AGENT | Get product by ID |
 | PUT | `/api/products/{id}` | ADMIN | Update product |
 | DELETE | `/api/products/{id}` | ADMIN | Delete product |

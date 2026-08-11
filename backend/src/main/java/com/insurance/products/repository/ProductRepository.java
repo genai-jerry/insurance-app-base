@@ -24,11 +24,20 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
            "LOWER(p.planType) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     List<Product> searchProducts(@Param("searchTerm") String searchTerm);
 
+    /**
+     * Lists products narrowed by every supplied filter; a null parameter skips its
+     * predicate. The name term matches by case-insensitive substring and is bound as
+     * data, never interpolated into the query structure. Ordered by id ascending so
+     * repeated identical requests return matches in the same, stable order.
+     */
     @Query("SELECT p FROM Product p WHERE " +
            "(:categoryId IS NULL OR p.category.id = :categoryId) AND " +
            "(:insurer IS NULL OR LOWER(p.insurer) = LOWER(:insurer)) AND " +
-           "(:planType IS NULL OR LOWER(p.planType) = LOWER(:planType))")
+           "(:planType IS NULL OR LOWER(p.planType) = LOWER(:planType)) AND " +
+           "(:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+           "ORDER BY p.id ASC")
     List<Product> findByFilters(@Param("categoryId") Long categoryId,
                                 @Param("insurer") String insurer,
-                                @Param("planType") String planType);
+                                @Param("planType") String planType,
+                                @Param("name") String name);
 }
