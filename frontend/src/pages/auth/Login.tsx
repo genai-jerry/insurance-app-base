@@ -80,6 +80,7 @@ export const Login = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <TextField
                 fullWidth
+                required
                 label="Email"
                 margin="normal"
                 {...register('email', {
@@ -92,6 +93,7 @@ export const Login = () => {
 
               <TextField
                 fullWidth
+                required
                 label="Password"
                 type="password"
                 margin="normal"
