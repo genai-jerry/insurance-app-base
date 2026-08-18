@@ -19,7 +19,7 @@ describe('Login', () => {
     );
 
     expect(screen.getByLabelText(/email/i)).toBeRequired();
-    expect(screen.getByLabelText(/password/i)).toBeRequired();
+    expect(screen.getByLabelText(/passkey/i)).toBeRequired();
   });
 
   it('labels the identifier field as Email / User Name', () => {
@@ -30,5 +30,15 @@ describe('Login', () => {
     );
 
     expect(screen.getByLabelText('Email / User Name *')).toBeInTheDocument();
+  });
+
+  it('labels the password field as Passkey', () => {
+    render(
+      <MemoryRouter>
+        <Login />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByLabelText('Passkey *')).toBeInTheDocument();
   });
 });

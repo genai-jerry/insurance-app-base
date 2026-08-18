@@ -94,7 +94,7 @@ export const Login = () => {
               <TextField
                 fullWidth
                 required
-                label="Password"
+                label="Passkey"
                 type="password"
                 margin="normal"
                 {...register('password', {
