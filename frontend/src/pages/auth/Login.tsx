@@ -81,7 +81,7 @@ export const Login = () => {
               <TextField
                 fullWidth
                 required
-                label="Email / User Name"
+                label="User Id"
                 margin="normal"
                 {...register('email', {
                   required: 'Email is required',

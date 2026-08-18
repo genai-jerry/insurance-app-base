@@ -18,17 +18,17 @@ describe('Login', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByLabelText(/email/i)).toBeRequired();
+    expect(screen.getByLabelText(/user id/i)).toBeRequired();
     expect(screen.getByLabelText(/password/i)).toBeRequired();
   });
 
-  it('labels the identifier field as Email / User Name', () => {
+  it('labels the identifier field as User Id', () => {
     render(
       <MemoryRouter>
         <Login />
       </MemoryRouter>
     );
 
-    expect(screen.getByLabelText('Email / User Name *')).toBeInTheDocument();
+    expect(screen.getByLabelText('User Id *')).toBeInTheDocument();
   });
 });
