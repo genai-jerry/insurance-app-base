@@ -21,4 +21,14 @@ describe('Login', () => {
     expect(screen.getByLabelText(/email/i)).toBeRequired();
     expect(screen.getByLabelText(/password/i)).toBeRequired();
   });
+
+  it('labels the identifier field as Email / User Name', () => {
+    render(
+      <MemoryRouter>
+        <Login />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByLabelText('Email / User Name *')).toBeInTheDocument();
+  });
 });
