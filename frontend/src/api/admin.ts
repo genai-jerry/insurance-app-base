@@ -26,6 +26,16 @@ export const adminApi = {
     return response.data;
   },
 
+  createUser: async (data: {
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+  }): Promise<User> => {
+    const response = await apiClient.post<User>('/admin/users', data);
+    return response.data;
+  },
+
   updateUser: async (
     id: number,
     data: { name?: string; email?: string; role?: string }

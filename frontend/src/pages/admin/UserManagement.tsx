@@ -29,12 +29,20 @@ import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { formatDate } from '../../utils/formatters';
 
+interface CreateUserFormValues {
+  name: string;
+  email: string;
+  password: string;
+  role: 'AGENT' | 'ADMIN';
+}
+
 export const UserManagement = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [emailFilter, setEmailFilter] = useState('');
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // Trimmed before it enters the query key so "a " and "a" share one cache
@@ -48,6 +56,13 @@ export const UserManagement = () => {
     reset,
     formState: { errors },
   } = useForm<Partial<User>>();
+
+  const {
+    register: registerCreate,
+    handleSubmit: handleSubmitCreate,
+    reset: resetCreate,
+    formState: { errors: createErrors },
+  } = useForm<CreateUserFormValues>({ defaultValues: { role: 'AGENT' } });
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['users', page, rowsPerPage, appliedFilter],
@@ -77,10 +92,24 @@ export const UserManagement = () => {
     },
   });
 
+  const createMutation = useMutation({
+    mutationFn: adminApi.createUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setCreateDialogOpen(false);
+      resetCreate();
+    },
+  });
+
   const handleEdit = (user: User) => {
     setSelectedUser(user);
     reset(user);
     setEditDialogOpen(true);
+  };
+
+  const handleAddUser = () => {
+    resetCreate();
+    setCreateDialogOpen(true);
   };
 
   const handleDelete = (userId: number) => {
@@ -95,6 +124,10 @@ export const UserManagement = () => {
     }
   };
 
+  const onSubmitCreate = (data: CreateUserFormValues) => {
+    createMutation.mutate(data);
+  };
+
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
@@ -103,7 +136,7 @@ export const UserManagement = () => {
 
       {/* Rendered unconditionally: if the loading branch replaced the whole
           page, this field would unmount on the first keystroke and lose focus. */}
-      <Paper sx={{ mb: 2, p: 2 }}>
+      <Paper sx={{ mb: 2, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <TextField
           label="Filter by email"
           variant="outlined"
@@ -115,6 +148,9 @@ export const UserManagement = () => {
           }}
           sx={{ minWidth: 300 }}
         />
+        <Button variant="contained" onClick={handleAddUser}>
+          Add User
+        </Button>
       </Paper>
 
       {error ? (
@@ -244,6 +280,76 @@ export const UserManagement = () => {
               disabled={updateMutation.isPending}
             >
               Save
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {/* Add User Dialog */}
+      <Dialog
+        open={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <form onSubmit={handleSubmitCreate(onSubmitCreate)}>
+          <DialogTitle>Add User</DialogTitle>
+          <DialogContent>
+            {createMutation.error && (
+              <ErrorAlert error={createMutation.error as Error} />
+            )}
+            <TextField
+              fullWidth
+              label="Name"
+              margin="normal"
+              {...registerCreate('name', { required: 'Name is required' })}
+              error={!!createErrors.name}
+              helperText={createErrors.name?.message}
+            />
+            <TextField
+              fullWidth
+              label="Email"
+              type="email"
+              margin="normal"
+              {...registerCreate('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Invalid email',
+                },
+              })}
+              error={!!createErrors.email}
+              helperText={createErrors.email?.message}
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              type="password"
+              margin="normal"
+              {...registerCreate('password', { required: 'Password is required' })}
+              error={!!createErrors.password}
+              helperText={createErrors.password?.message}
+            />
+            <TextField
+              fullWidth
+              select
+              label="Role"
+              margin="normal"
+              defaultValue="AGENT"
+              {...registerCreate('role')}
+            >
+              <MenuItem value="AGENT">Agent</MenuItem>
+              <MenuItem value="ADMIN">Admin</MenuItem>
+            </TextField>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={createMutation.isPending}
+            >
+              Create
             </Button>
           </DialogActions>
         </form>

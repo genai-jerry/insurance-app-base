@@ -11,10 +11,12 @@ vi.mock('../../api/admin', () => ({
     getAllUsers: vi.fn(),
     updateUser: vi.fn(),
     deleteUser: vi.fn(),
+    createUser: vi.fn(),
   },
 }));
 
 const getAllUsers = vi.mocked(adminApi.getAllUsers);
+const createUser = vi.mocked(adminApi.createUser);
 
 const ADMIN: User = {
   id: 1,
@@ -193,5 +195,74 @@ describe('UserManagement email filter', () => {
 
     expect(filterInput()).toHaveFocus();
     expect(filterInput()).toHaveValue('adm');
+  });
+});
+
+describe('UserManagement add user', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    getAllUsers.mockResolvedValue(ALL_USERS);
+  });
+
+  it('opens a create dialog and submits the new user to the server', async () => {
+    const user = userEvent.setup();
+    createUser.mockResolvedValue({
+      id: 4,
+      name: 'New Person',
+      email: 'new.person@insurance.com',
+      role: 'AGENT',
+    });
+    renderPage();
+
+    await screen.findByText('admin@insurance.com');
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Add User' }));
+    });
+
+    const dialog = await screen.findByRole('dialog');
+    await act(async () => {
+      await user.type(within(dialog).getByLabelText('Name'), 'New Person');
+      await user.type(
+        within(dialog).getByLabelText('Email'),
+        'new.person@insurance.com'
+      );
+      await user.type(within(dialog).getByLabelText('Password'), 'Secret@123');
+      await user.click(within(dialog).getByRole('button', { name: 'Create' }));
+    });
+
+    await waitFor(() =>
+      expect(createUser).toHaveBeenCalledWith(
+        {
+          name: 'New Person',
+          email: 'new.person@insurance.com',
+          password: 'Secret@123',
+          role: 'AGENT',
+        },
+        expect.anything()
+      )
+    );
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    );
+  });
+
+  it('requires name, email and password before submitting', async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await screen.findByText('admin@insurance.com');
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Add User' }));
+    });
+
+    const dialog = await screen.findByRole('dialog');
+    await act(async () => {
+      await user.click(within(dialog).getByRole('button', { name: 'Create' }));
+    });
+
+    expect(await within(dialog).findByText('Name is required')).toBeInTheDocument();
+    expect(within(dialog).getByText('Email is required')).toBeInTheDocument();
+    expect(within(dialog).getByText('Password is required')).toBeInTheDocument();
+    expect(createUser).not.toHaveBeenCalled();
   });
 });
