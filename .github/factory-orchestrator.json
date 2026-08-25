@@ -1,0 +1,7 @@
+{
+  "engine": "langgraph",
+  "endpoint": "",
+  "runners": {
+    "max_parallel": 4
+  }
+}
