@@ -60,7 +60,7 @@ export const Login = () => {
         <Card sx={{ width: '100%', maxWidth: 500 }}>
           <CardContent sx={{ p: 4 }}>
             <Typography variant="h4" align="center" gutterBottom>
-              Insure Hub
+              InsurePro
             </Typography>
             <Typography
               variant="body2"
